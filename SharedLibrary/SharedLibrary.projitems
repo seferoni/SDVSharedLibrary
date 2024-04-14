@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects Condition="'$(MSBuildVersion)' == '' Or '$(MSBuildVersion)' &lt; '16.0'">$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>c6df2daa-d9a2-4522-a69e-6b7d0d7baff3</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>SharedLibrary</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Integrations\GMCM\Attributes\GMCMIgnoreAttribute.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Integrations\GMCM\Attributes\GMCMRangeAttribute.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Integrations\GMCM\Attributes\GMCMPercentageAttribute.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Integrations\GMCM\GMCMHelper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Interfaces\GMCM\IGenericModConfigMenuApi.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="$(MSBuildThisFileDirectory)Interfaces\GMCM\" />
+  </ItemGroup>
+</Project>
