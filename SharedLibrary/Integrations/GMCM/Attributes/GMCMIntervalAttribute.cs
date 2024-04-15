@@ -6,6 +6,9 @@
 [AttributeUsage(AttributeTargets.Property)]
 internal class GMCMIntervalAttribute : Attribute
 {
+	/// <summary>
+	/// The interval value for the targeted numerical GMCM property.
+	/// </summary>
 	internal float Value { get; set; }
 
 	internal GMCMIntervalAttribute(float interval)

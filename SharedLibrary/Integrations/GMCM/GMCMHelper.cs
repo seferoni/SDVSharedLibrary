@@ -2,21 +2,21 @@
 
 #region using directives
 
-using SharedLibrary.Interfaces.GMCM;
-using StardewModdingAPI;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using SharedLibrary.Classes;
+using SharedLibrary.Interfaces.GMCM;
+using StardewModdingAPI;
 
 #endregion
 
-internal class GMCMHelper
+internal static class GMCMHelper
 {
 	internal static IGenericModConfigMenuApi GMCMInterface { get; set; } = null!;
 	internal static IModHelper SMAPIHelper { get; set; } = null!;
 	internal static IManifest ModManifest { get; set; } = null!;
-	public GMCMHelper(IGenericModConfigMenuApi api, IModHelper helper, IManifest manifest)
+	public static void Initialise(IGenericModConfigMenuApi api, IModHelper helper, IManifest manifest)
 	{
 		GMCMInterface = api;
 		SMAPIHelper = helper;
@@ -29,9 +29,9 @@ internal class GMCMHelper
 	}
 
 	private static void Register<TConfig>(TConfig modConfig) 
-		where TConfig : class, new()
+		where TConfig : ConfigClass, new()
 	{
-		GMCMInterface.Register(ModManifest, () => modConfig = new(), () => SMAPIHelper.WriteConfig(modConfig));
+		GMCMInterface.Register(ModManifest, () => modConfig.ResetProperties(), () => SMAPIHelper.WriteConfig(modConfig));
 	}
 
 	private static PropertyInfo[] GetProperties<TConfig>(TConfig modConfig)
@@ -148,8 +148,8 @@ internal class GMCMHelper
 		);
 	}
 
-	internal void Build<TConfig>(TConfig modConfig) 
-		where TConfig : class, new()
+	internal static void Build<TConfig>(TConfig modConfig) 
+		where TConfig : ConfigClass, new()
 	{
 		Register(modConfig);
 		AddSectionTitle();

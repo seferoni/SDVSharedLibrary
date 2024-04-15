@@ -9,6 +9,7 @@
     <Import_RootNamespace>SharedLibrary</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Classes\ConfigClass.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Integrations\GMCM\Attributes\GMCMIgnoreAttribute.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Integrations\GMCM\Attributes\GMCMRangeAttribute.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Integrations\GMCM\Attributes\GMCMIntervalAttribute.cs" />
