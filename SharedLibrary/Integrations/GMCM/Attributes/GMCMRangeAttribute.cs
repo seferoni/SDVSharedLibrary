@@ -1,7 +1,7 @@
 ﻿namespace SharedLibrary.Integrations.GMCM;
 
 /// <summary>
-/// Defines the minimum and maximum value of a GMCM property.
+/// Defines the minimum and maximum value of a numerical GMCM property.
 /// </summary>
 [AttributeUsage(AttributeTargets.Property)]
 internal class GMCMRangeAttribute : Attribute

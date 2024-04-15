@@ -11,7 +11,7 @@
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Integrations\GMCM\Attributes\GMCMIgnoreAttribute.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Integrations\GMCM\Attributes\GMCMRangeAttribute.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Integrations\GMCM\Attributes\GMCMPercentageAttribute.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Integrations\GMCM\Attributes\GMCMIntervalAttribute.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Integrations\GMCM\GMCMHelper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Interfaces\GMCM\IGenericModConfigMenuApi.cs" />
   </ItemGroup>

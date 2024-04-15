@@ -16,7 +16,7 @@ internal class GMCMHelper
 	internal static IGenericModConfigMenuApi GMCMInterface { get; set; } = null!;
 	internal static IModHelper SMAPIHelper { get; set; } = null!;
 	internal static IManifest ModManifest { get; set; } = null!;
-	GMCMHelper(IGenericModConfigMenuApi api, IModHelper helper, IManifest manifest)
+	public GMCMHelper(IGenericModConfigMenuApi api, IModHelper helper, IManifest manifest)
 	{
 		GMCMInterface = api;
 		SMAPIHelper = helper;
@@ -40,6 +40,16 @@ internal class GMCMHelper
 			.Where((property) => property.GetCustomAttribute<GMCMIgnoreAttribute>() is null)
 			.ToArray();
 		return properties;
+	}
+
+	private static GMCMIntervalAttribute GetInterval(PropertyInfo property)
+	{
+		return property.GetCustomAttribute<GMCMIntervalAttribute>()!;
+	}
+
+	private static GMCMRangeAttribute GetRange(PropertyInfo property)
+	{
+		return property.GetCustomAttribute<GMCMRangeAttribute>()!;
 	}
 
 	private static Action<IComparable> CreateSetter<IComparable, TConfig>(PropertyInfo property, TConfig modConfig)
@@ -79,7 +89,6 @@ internal class GMCMHelper
 	}
 
 	private static void CreateSettings<TConfig>(TConfig modConfig) 
-		where TConfig : class, new()
 	{
 		var properties = GetProperties(modConfig);
 
@@ -87,13 +96,45 @@ internal class GMCMHelper
 		{
 			return;
 		}
-		// TODO:
+		
+		foreach(PropertyInfo property in properties)
+		{
+			if (property.PropertyType == typeof(int))
+			{
+				AddIntSetting(property, modConfig);
+				continue;
+			}
+
+			if (property.PropertyType == typeof(float))
+			{
+				AddFloatSetting(property, modConfig);
+			}
+		}
+	}
+
+	private static void AddFloatSetting<TConfig>(PropertyInfo property, TConfig modConfig)
+	{
+		Dictionary<string, Delegate> accessors = CreateAccessors<float, TConfig>(property, modConfig);
+		GMCMRangeAttribute range = GetRange(property);
+		GMCMIntervalAttribute interval = GetInterval(property);
+
+		GMCMInterface.AddNumberOption(
+			mod: ModManifest,
+			getValue: (Func<float>)accessors["getter"],
+			setValue: (Action<float>)accessors["setter"],
+			name: () => GetI18NName(property),
+			tooltip: () => Get18NDescription(property),
+			min: range.Min,
+			max: range.Max,
+			interval: interval.Value
+		);
 	}
 
 	private static void AddIntSetting<TConfig>(PropertyInfo property, TConfig modConfig)
 	{
 		Dictionary<string, Delegate> accessors = CreateAccessors<int, TConfig>(property, modConfig);
-		Dictionary<string, int> range = GetRange<int, TConfig>(property, modConfig);
+		GMCMRangeAttribute range = GetRange(property);
+		GMCMIntervalAttribute interval = GetInterval(property);
 
 		GMCMInterface.AddNumberOption(
 			mod: ModManifest, 
@@ -101,12 +142,13 @@ internal class GMCMHelper
 			setValue: (Action<int>)accessors["setter"], 
 			name: () => GetI18NName(property), 
 			tooltip: () => Get18NDescription(property),
-			min: range["min"],
-			max: range["max"]
+			min: (int)range.Min,
+			max: (int)range.Max,
+			interval: (int)interval.Value
 		);
 	}
 
-	internal static void Build<TConfig>(TConfig modConfig) 
+	internal void Build<TConfig>(TConfig modConfig) 
 		where TConfig : class, new()
 	{
 		Register(modConfig);
