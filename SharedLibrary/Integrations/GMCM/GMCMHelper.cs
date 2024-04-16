@@ -16,6 +16,7 @@ internal static class GMCMHelper
 	internal static IGenericModConfigMenuApi GMCMInterface { get; set; } = null!;
 	internal static IModHelper SMAPIHelper { get; set; } = null!;
 	internal static IManifest ModManifest { get; set; } = null!;
+
 	public static void Initialise(IGenericModConfigMenuApi api, IModHelper helper, IManifest manifest)
 	{
 		GMCMInterface = api;
@@ -52,14 +53,16 @@ internal static class GMCMHelper
 		return property.GetCustomAttribute<GMCMRangeAttribute>()!;
 	}
 
-	private static Action<IComparable> CreateSetter<IComparable, TConfig>(PropertyInfo property, TConfig modConfig)
+	private static Action<TValue> CreateSetter<TValue, TConfig>(PropertyInfo property, TConfig modConfig)
+		where TValue : IComparable<TValue>
 	{
-		return (IComparable value) => property.GetSetMethod()!.Invoke(modConfig, new object[] { value! });
+		return (TValue value) => property.GetSetMethod()!.Invoke(modConfig, new object[] { value! });
 	}
 
-	private static Func<IComparable> CreateGetter<IComparable, TConfig>(PropertyInfo property, TConfig modConfig)
+	private static Func<TValue> CreateGetter<TValue, TConfig>(PropertyInfo property, TConfig modConfig)
+		where TValue : IComparable<TValue>
 	{
-		return () => (IComparable)property.GetGetMethod()!.Invoke(modConfig, null)!;
+		return () => (TValue)property.GetGetMethod()!.Invoke(modConfig, null)!;
 	}
 
 	private static string GetI18NTitle()
@@ -78,7 +81,7 @@ internal static class GMCMHelper
 	}
 
 	private static Dictionary<string, Delegate> CreateAccessors<TValue, TConfig>(PropertyInfo property, TConfig modConfig) 
-		where TValue : IComparable
+		where TValue : IComparable<TValue>
 	{
 		Dictionary<string, Delegate> accessors = new()
 		{
