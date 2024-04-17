@@ -5,7 +5,7 @@ using System.Reflection;
 
 public abstract class ConfigClass
 {
-	internal abstract Dictionary<string, dynamic> Defaults { get; set; }
+	internal abstract Dictionary<string, object> Defaults { get; set; }
 	public void ResetProperties()
 	{
 		PropertyInfo[] properties = GetType().GetProperties();
