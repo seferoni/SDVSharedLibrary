@@ -5,6 +5,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Text.Json;
 using SharedLibrary.Classes;
 using SharedLibrary.Interfaces.GMCM;
 using StardewModdingAPI;
@@ -65,19 +66,24 @@ internal static class GMCMHelper
 		return () => (TValue)property.GetGetMethod()!.Invoke(modConfig, null)!;
 	}
 
+	private static string FormatPropertyName(PropertyInfo property)
+	{
+		return JsonNamingPolicy.CamelCase.ConvertName(property.Name);
+	}
+
 	private static string GetI18NTitle()
 	{
-		return SMAPIHelper.Translation.Get("Title");
+		return SMAPIHelper.Translation.Get("GMCM.title");
 	}
 
-	private static string GetI18NName(PropertyInfo property)
+	private static string GetI18NName(string propertyName)
 	{
-		return SMAPIHelper.Translation.Get($"{property.Name}");
+		return SMAPIHelper.Translation.Get($"GMCM.{propertyName}");
 	}
 
-	private static string Get18NDescription(PropertyInfo property)
+	private static string Get18NDescription(string propertyName)
 	{
-		return SMAPIHelper.Translation.Get($"{property.Name}.Tooltip");
+		return SMAPIHelper.Translation.Get($"GMCM.{propertyName}.tooltip");
 	}
 
 	private static Dictionary<string, Delegate> CreateAccessors<TValue, TConfig>(PropertyInfo property, TConfig modConfig) 
@@ -118,6 +124,7 @@ internal static class GMCMHelper
 	private static void AddFloatSetting<TConfig>(PropertyInfo property, TConfig modConfig)
 	{
 		Dictionary<string, Delegate> accessors = CreateAccessors<float, TConfig>(property, modConfig);
+		string propertyName = FormatPropertyName(property);
 		GMCMRangeAttribute range = GetRange(property);
 		GMCMIntervalAttribute interval = GetInterval(property);
 
@@ -125,8 +132,8 @@ internal static class GMCMHelper
 			mod: ModManifest,
 			getValue: (Func<float>)accessors["getter"],
 			setValue: (Action<float>)accessors["setter"],
-			name: () => GetI18NName(property),
-			tooltip: () => Get18NDescription(property),
+			name: () => GetI18NName(propertyName),
+			tooltip: () => Get18NDescription(propertyName),
 			min: range.Min,
 			max: range.Max,
 			interval: interval.Value
@@ -136,15 +143,16 @@ internal static class GMCMHelper
 	private static void AddIntSetting<TConfig>(PropertyInfo property, TConfig modConfig)
 	{
 		Dictionary<string, Delegate> accessors = CreateAccessors<int, TConfig>(property, modConfig);
+		string propertyName = FormatPropertyName(property);
 		GMCMRangeAttribute range = GetRange(property);
 		GMCMIntervalAttribute interval = GetInterval(property);
 
 		GMCMInterface.AddNumberOption(
-			mod: ModManifest, 
+			mod: ModManifest,
 			getValue: (Func<int>)accessors["getter"], 
 			setValue: (Action<int>)accessors["setter"], 
-			name: () => GetI18NName(property), 
-			tooltip: () => Get18NDescription(property),
+			name: () => GetI18NName(propertyName), 
+			tooltip: () => Get18NDescription(propertyName),
 			min: (int)range.Min,
 			max: (int)range.Max,
 			interval: (int)interval.Value
